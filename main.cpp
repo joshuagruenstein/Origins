@@ -3,6 +3,9 @@
 
 #define GOLDEN 1.61803398875
 #define DEGREE_TO_RADIAN 0.0174533
+
+#define LENGTH_FACTOR .75
+#define ANGLE_FACTOR 30
 #define THICK 1
 
 sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta) {
@@ -15,10 +18,20 @@ sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int th
     line.setFillColor(sf::Color(0, 0, 0));
     window.draw(line);
     
-    sf::Vector2i returnVect(x+length*cos(theta*DEGREE_TO_RADIAN),
-                            y+length*sin(theta*DEGREE_TO_RADIAN));
+    sf::Vector2i returnVect(x+length*sin(theta*DEGREE_TO_RADIAN),
+                            y+length*cos(theta*DEGREE_TO_RADIAN));
     
     return returnVect;
+}
+
+void drawTree(sf::RenderWindow& window, int x, int y, int theta,
+              int num, int max, int height) {
+    if (num > max) return;
+    
+    sf::Vector2i newCoords = drawLine(window,x,y,height,theta);
+    
+    drawTree(window,newCoords.x,newCoords.y,theta + ANGLE_FACTOR/num,num+1,max,height*LENGTH_FACTOR);
+    drawTree(window,newCoords.x,newCoords.y,theta - ANGLE_FACTOR/num,num+1,max,height*LENGTH_FACTOR);
 }
 
 int main(int, char const**) {
@@ -37,6 +50,9 @@ int main(int, char const**) {
         }
 
         window.clear(sf::Color(255,255,255));
+
+        drawTree(window,650,0,0,1,10,200);
+
         
         window.display();
     } return EXIT_SUCCESS;
