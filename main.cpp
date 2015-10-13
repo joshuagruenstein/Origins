@@ -6,7 +6,8 @@
 
 #define LENGTH_FACTOR .75
 #define ANGLE_FACTOR 30
-#define THICK 1
+#define THICK 2
+#define SEC_PER_FRAME 500
 
 sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta) {
     sf::RectangleShape line(sf::Vector2f(THICK, length));
@@ -36,7 +37,10 @@ void drawTree(sf::RenderWindow& window, int x, int y, int theta,
 
 int main(int, char const**) {
     sf::RenderWindow window(sf::VideoMode(1300, 800), "Origins");
-
+    
+    sf::Clock clock;
+    int layers;
+    
     while (window.isOpen()) {
         
         sf::Event event;
@@ -51,10 +55,15 @@ int main(int, char const**) {
 
         window.clear(sf::Color(255,255,255));
 
-        drawTree(window,650,0,0,1,10,200);
-
+        if (clock.getElapsedTime().asMilliseconds() > SEC_PER_FRAME) {
+            clock.restart();
+            layers++;
+        }
+        
+        drawTree(window,650,0,0,1,layers,200);
         
         window.display();
+        
     } return EXIT_SUCCESS;
 }
 
