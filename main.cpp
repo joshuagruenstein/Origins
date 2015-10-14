@@ -4,20 +4,23 @@
 #define GOLDEN 1.61803398875
 #define DEGREE_TO_RADIAN 0.0174533
 
-#define LENGTH_FACTOR .8
 #define THICK 2
 #define SEC_PER_FRAME 500
+#define SOIL_HEIGHT 400
 
-int angleFactor = 35;
+double angle = 35;
+double length = 200;
+double lengthFactor = 0.8;
 
-sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta) {
+sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta, sf::Color color) {
     sf::RectangleShape line(sf::Vector2f(THICK, length));
     line.setOrigin(THICK/2,length);
+    line.setFillColor(color);
+    line.setOutlineColor(color);
     
     line.setPosition(x,window.getSize().y-y);
     line.rotate(theta);
     
-    line.setFillColor(sf::Color(255, 255, 255));
     window.draw(line);
     
     sf::Vector2i returnVect(x+length*sin(theta*DEGREE_TO_RADIAN),
@@ -27,27 +30,31 @@ sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int th
 }
 
 void drawTree(sf::RenderWindow& window, int x, int y, int theta,
-              int num, int max, int height) {
+              int num, int max, int height, sf::Color color) {
     if (num > max) return;
     
-    sf::Vector2i newCoords = drawLine(window,x,y,height,theta);
+    sf::Vector2i newCoords = drawLine(window,x,y,height,theta, color);
     
-    drawTree(window,newCoords.x,newCoords.y,theta + angleFactor/num,num+1,max,height*LENGTH_FACTOR);
-    drawTree(window,newCoords.x,newCoords.y,theta - angleFactor/num,num+1,max,height*LENGTH_FACTOR);
+    drawTree(window,newCoords.x,newCoords.y,theta + angle/num,num+1,max,height*lengthFactor, color);
+    drawTree(window,newCoords.x,newCoords.y,theta - angle/num,num+1,max,height*lengthFactor, color);
 }
 
 void drawWeirdTree(sf::RenderWindow& window, int x, int y, int theta,
-                   int num, int max, int height) {
+                   int num, int max, int height, sf::Color color) {
     if (num > max) return;
     
-    sf::Vector2i newCoords = drawLine(window,x,y,height,theta);
+    sf::Vector2i newCoords = drawLine(window,x,y,height,theta, color);
     
-    drawWeirdTree(window,newCoords.x,newCoords.y,theta + angleFactor,num+1,max,height*LENGTH_FACTOR);
-    drawWeirdTree(window,newCoords.x,newCoords.y,theta - angleFactor,num+1,max,height*LENGTH_FACTOR);
+    drawWeirdTree(window,newCoords.x,newCoords.y,theta + angle,num+1,max,height*lengthFactor, color);
+    drawWeirdTree(window,newCoords.x,newCoords.y,theta - angle,num+1,max,height*lengthFactor, color);
 }
 
 int main(int, char const**) {
     sf::RenderWindow window(sf::VideoMode(2000, 1500), "Origins", sf::Style::Fullscreen);
+    sf::RectangleShape soil(sf::Vector2f(window.getSize().x,SOIL_HEIGHT));
+    soil.setFillColor(sf::Color::White);
+    soil.setOutlineColor(sf::Color::White);
+    soil.setPosition(0,window.getSize().y-SOIL_HEIGHT);
     
     sf::Clock clock;
     int layers;
@@ -63,34 +70,42 @@ int main(int, char const**) {
             } if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-                else if (event.key.code == sf::Keyboard::Up) {
-                    if (layers < 15) layers++;
-                } else if (event.key.code == sf::Keyboard::Down) {
+                else if (event.key.code == sf::Keyboard::Period) {
+                    if (layers < 10) layers++;
+                } else if (event.key.code == sf::Keyboard::Comma) {
                     if (layers > 0) layers--;
                 } else if (event.key.code == sf::Keyboard::W)
                     weird = true;
                 else if (event.key.code == sf::Keyboard::Q)
                     weird = false;
-                else if (event.key.code == sf::Keyboard::Left) {
-                    if (angleFactor>0) angleFactor--;
-                } else if (event.key.code == sf::Keyboard::Right) {
-                    if (angleFactor<90) angleFactor++;
-                }
             }
+        }
+    
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            if (angle>0) angle -= 0.2;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            if (angle<70) angle += 0.2;
+        } if (sf::Keyboard::isKeyPressed(sf::Keyboard::RSystem)) {
+            length -= 1;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
+            if (length<500) length += 1;
+        } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            if (lengthFactor>.3) lengthFactor -= .002;
+        } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            if (lengthFactor<.9) lengthFactor += .002;
         }
 
         window.clear(sf::Color(0,0,0));
+        window.draw(soil);
         
         if (weird) {
-            drawWeirdTree(window,window.getSize().x/2,120,0,1,layers,350);
-            drawWeirdTree(window,window.getSize().x/2,200,180,1,8,90);
+            drawWeirdTree(window,window.getSize().x/2,SOIL_HEIGHT,0,1,layers,length,sf::Color::White);
+            drawWeirdTree(window,window.getSize().x/2,SOIL_HEIGHT,180,1,8,length/2,sf::Color::Black);
         }
         else {
-            drawTree(window,window.getSize().x/2,120,0,1,layers,350);
-            drawTree(window,window.getSize().x/2,200,180,1,8,90);
+            drawTree(window,window.getSize().x/2,SOIL_HEIGHT,0,1,layers,length,sf::Color::White);
+            drawTree(window,window.getSize().x/2,SOIL_HEIGHT,180,1,8,length/2,sf::Color::Black);
         }
-        
-        
         
         window.display();
         
