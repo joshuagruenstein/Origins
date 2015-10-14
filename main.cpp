@@ -8,7 +8,7 @@
 #define THICK 2
 #define SEC_PER_FRAME 500
 
-int ANGLE_FACTOR = 35;
+int angleFactor = 35;
 
 sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta) {
     sf::RectangleShape line(sf::Vector2f(THICK, length));
@@ -32,8 +32,8 @@ void drawTree(sf::RenderWindow& window, int x, int y, int theta,
     
     sf::Vector2i newCoords = drawLine(window,x,y,height,theta);
     
-    drawTree(window,newCoords.x,newCoords.y,theta + ANGLE_FACTOR/num,num+1,max,height*LENGTH_FACTOR);
-    drawTree(window,newCoords.x,newCoords.y,theta - ANGLE_FACTOR/num,num+1,max,height*LENGTH_FACTOR);
+    drawTree(window,newCoords.x,newCoords.y,theta + angleFactor/num,num+1,max,height*LENGTH_FACTOR);
+    drawTree(window,newCoords.x,newCoords.y,theta - angleFactor/num,num+1,max,height*LENGTH_FACTOR);
 }
 
 void drawWeirdTree(sf::RenderWindow& window, int x, int y, int theta,
@@ -42,8 +42,8 @@ void drawWeirdTree(sf::RenderWindow& window, int x, int y, int theta,
     
     sf::Vector2i newCoords = drawLine(window,x,y,height,theta);
     
-    drawWeirdTree(window,newCoords.x,newCoords.y,theta + ANGLE_FACTOR,num+1,max,height*LENGTH_FACTOR);
-    drawWeirdTree(window,newCoords.x,newCoords.y,theta - ANGLE_FACTOR,num+1,max,height*LENGTH_FACTOR);
+    drawWeirdTree(window,newCoords.x,newCoords.y,theta + angleFactor,num+1,max,height*LENGTH_FACTOR);
+    drawWeirdTree(window,newCoords.x,newCoords.y,theta - angleFactor,num+1,max,height*LENGTH_FACTOR);
 }
 
 int main(int, char const**) {
@@ -72,9 +72,9 @@ int main(int, char const**) {
                 else if (event.key.code == sf::Keyboard::Q)
                     weird = false;
                 else if (event.key.code == sf::Keyboard::Left) {
-                    if (ANGLE_FACTOR>0) ANGLE_FACTOR--;
+                    if (angleFactor>0) angleFactor--;
                 } else if (event.key.code == sf::Keyboard::Right) {
-                    if (ANGLE_FACTOR<90) ANGLE_FACTOR++;
+                    if (angleFactor<90) angleFactor++;
                 }
             }
         }
