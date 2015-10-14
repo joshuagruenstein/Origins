@@ -5,9 +5,10 @@
 #define DEGREE_TO_RADIAN 0.0174533
 
 #define LENGTH_FACTOR .8
-#define ANGLE_FACTOR 33
 #define THICK 2
 #define SEC_PER_FRAME 500
+
+int ANGLE_FACTOR = 35;
 
 sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta) {
     sf::RectangleShape line(sf::Vector2f(THICK, length));
@@ -50,6 +51,7 @@ int main(int, char const**) {
     
     sf::Clock clock;
     int layers;
+    int lowLayers;
     bool weird;
     
     while (window.isOpen()) {
@@ -61,27 +63,34 @@ int main(int, char const**) {
             } if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::Escape)
                     window.close();
-                else if (event.key.code == sf::Keyboard::Up)
-                    layers++;
-                else if (event.key.code == sf::Keyboard::Down)
-                    layers--;
-                else if (event.key.code == sf::Keyboard::W)
+                else if (event.key.code == sf::Keyboard::Up) {
+                    if (layers < 15) layers++;
+                } else if (event.key.code == sf::Keyboard::Down) {
+                    if (layers > 0) layers--;
+                } else if (event.key.code == sf::Keyboard::W)
                     weird = true;
                 else if (event.key.code == sf::Keyboard::Q)
                     weird = false;
+                else if (event.key.code == sf::Keyboard::Left) {
+                    if (ANGLE_FACTOR>0) ANGLE_FACTOR--;
+                } else if (event.key.code == sf::Keyboard::Right) {
+                    if (ANGLE_FACTOR<90) ANGLE_FACTOR++;
+                }
             }
         }
 
         window.clear(sf::Color(0,0,0));
-
-        /* ANIMATION
-        if (clock.getElapsedTime().asMilliseconds() > SEC_PER_FRAME) {
-            clock.restart();
-            layers++;
-        }*/
         
-        if (weird) drawWeirdTree(window,window.getSize().x/2,0,0,1,layers,350);
-        else drawTree(window,window.getSize().x/2,0,0,1,layers,350);
+        if (weird) {
+            drawWeirdTree(window,window.getSize().x/2,120,0,1,layers,350);
+            drawWeirdTree(window,window.getSize().x/2,200,180,1,8,90);
+        }
+        else {
+            drawTree(window,window.getSize().x/2,120,0,1,layers,350);
+            drawTree(window,window.getSize().x/2,200,180,1,8,90);
+        }
+        
+        
         
         window.display();
         
