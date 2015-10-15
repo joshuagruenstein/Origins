@@ -10,7 +10,7 @@
 
 double angle = 35;
 double length = 200;
-double lengthFactor = 0.8;
+double lengthFactor = 0.75;
 
 sf::Vector2i drawLine(sf::RenderWindow& window, int x, int y, int length, int theta, sf::Color color) {
     sf::RectangleShape line(sf::Vector2f(THICK, length));
@@ -57,7 +57,7 @@ int main(int, char const**) {
     soil.setPosition(0,window.getSize().y-SOIL_HEIGHT);
     
     sf::Clock clock;
-    int layers;
+    int layers = 5;
     int lowLayers;
     bool weird;
     
@@ -74,37 +74,36 @@ int main(int, char const**) {
                     if (layers < 10) layers++;
                 } else if (event.key.code == sf::Keyboard::Comma) {
                     if (layers > 0) layers--;
-                } else if (event.key.code == sf::Keyboard::W)
-                    weird = true;
-                else if (event.key.code == sf::Keyboard::Q)
-                    weird = false;
+                }
             }
         }
     
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-            if (angle>0) angle -= 0.2;
+            if (angle>15) angle -= 0.2;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            if (angle<70) angle += 0.2;
+            if (angle<60) angle += 0.2;
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::RSystem)) {
-            length -= 1;
+            if (length>50) length -= 1;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::RAlt)) {
-            if (length<500) length += 1;
+            if (length<350) length += 1;
         } if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            if (lengthFactor>.3) lengthFactor -= .002;
+            if (lengthFactor>.5) lengthFactor -= .002;
         } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             if (lengthFactor<.9) lengthFactor += .002;
         }
+        
+        weird = (sf::Keyboard::isKeyPressed(sf::Keyboard::W));
 
         window.clear(sf::Color(0,0,0));
         window.draw(soil);
         
         if (weird) {
             drawWeirdTree(window,window.getSize().x/2,SOIL_HEIGHT,0,1,layers,length,sf::Color::White);
-            drawWeirdTree(window,window.getSize().x/2,SOIL_HEIGHT,180,1,8,length/2,sf::Color::Black);
+            drawWeirdTree(window,window.getSize().x/2,SOIL_HEIGHT,180,1,8,length/2.5,sf::Color::Black);
         }
         else {
             drawTree(window,window.getSize().x/2,SOIL_HEIGHT,0,1,layers,length,sf::Color::White);
-            drawTree(window,window.getSize().x/2,SOIL_HEIGHT,180,1,8,length/2,sf::Color::Black);
+            drawTree(window,window.getSize().x/2,SOIL_HEIGHT,180,1,8,length/2.5,sf::Color::Black);
         }
         
         window.display();
